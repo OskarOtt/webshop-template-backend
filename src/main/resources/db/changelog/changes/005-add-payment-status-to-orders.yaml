@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005
+      author: oskarott
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: payment_status
+                  type: VARCHAR(50)
+                  defaultValue: AWAITING_PAYMENT
+                  constraints:
+                    nullable: false

@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004
+      author: oskarott
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: stripe_session_id
+                  type: VARCHAR(255)
+              - column:
+                  name: stripe_payment_intent_id
+                  type: VARCHAR(255)
+              - column:
+                  name: paid_at
+                  type: TIMESTAMP

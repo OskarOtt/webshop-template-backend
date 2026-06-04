@@ -1,0 +1,9 @@
+# Copy this file to application-local.properties and fill in your local values.
+# application-local.properties is gitignored — never commit it.
+
+# JWT
+jwt.secret=jwtSecret_REPLACE_ME
+
+# Stripe (test keys from https://dashboard.stripe.com/test/apikeys)
+stripe.api-key=sk_test_REPLACE_ME
+stripe.webhook-secret=whsec_REPLACE_ME
