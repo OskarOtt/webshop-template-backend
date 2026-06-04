@@ -51,7 +51,7 @@ public class AuthService {
     public UserDto me(String email) {
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        return new UserDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhone());
+        return new UserDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhone(), user.getRole().name());
     }
 
     public TokenResponse login(LoginRequest request) {
