@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: 010
+      author: oskarott
+      changes:
+        - createTable:
+            tableName: article_tags
+            columns:
+              - column:
+                  name: article_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tag
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: article_tags
+            baseColumnNames: article_id
+            constraintName: fk_article_tags_article
+            referencedTableName: articles
+            referencedColumnNames: id
+            onDelete: CASCADE

@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009
+      author: oskarott
+      changes:
+        - dropColumn:
+            tableName: articles
+            columnName: category
+        - addColumn:
+            tableName: articles
+            columns:
+              - column:
+                  name: category_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: brand_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: sku
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: true
+                    unique: true
+              - column:
+                  name: size
+                  type: VARCHAR(50)
+              - column:
+                  name: weight
+                  type: DECIMAL(10, 3)
+              - column:
+                  name: color
+                  type: VARCHAR(100)
+        - addForeignKeyConstraint:
+            baseTableName: articles
+            baseColumnNames: category_id
+            constraintName: fk_articles_category
+            referencedTableName: categories
+            referencedColumnNames: id
+            onDelete: SET NULL
+        - addForeignKeyConstraint:
+            baseTableName: articles
+            baseColumnNames: brand_id
+            constraintName: fk_articles_brand
+            referencedTableName: brands
+            referencedColumnNames: id
+            onDelete: SET NULL

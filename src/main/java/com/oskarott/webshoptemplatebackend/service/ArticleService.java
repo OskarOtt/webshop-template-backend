@@ -12,9 +12,15 @@ import java.util.List;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final CategoryService categoryService;
+    private final BrandService brandService;
 
-    public ArticleService(ArticleRepository articleRepository) {
+    public ArticleService(ArticleRepository articleRepository,
+                          CategoryService categoryService,
+                          BrandService brandService) {
         this.articleRepository = articleRepository;
+        this.categoryService = categoryService;
+        this.brandService = brandService;
     }
 
     public List<ArticleResponse> getAll() {
@@ -27,8 +33,8 @@ public class ArticleService {
         return ArticleResponse.from(findOrThrow(id));
     }
 
-    public List<ArticleResponse> getByCategory(String category) {
-        return articleRepository.findByCategory(category).stream()
+    public List<ArticleResponse> getByCategory(Long categoryId) {
+        return articleRepository.findByCategoryId(categoryId).stream()
                 .map(ArticleResponse::from)
                 .toList();
     }
@@ -60,7 +66,17 @@ public class ArticleService {
         article.setDescription(request.description());
         article.setPrice(request.price());
         article.setStockQuantity(request.stockQuantity());
-        article.setCategory(request.category());
-        article.setImageUrl(request.imageUrl());
+        article.setImages(request.images() != null ? request.images() : List.of());
+        article.setSku(request.sku());
+        article.setSize(request.size());
+        article.setWeight(request.weight());
+        article.setColor(request.color());
+        article.setTags(request.tags() != null ? request.tags() : List.of());
+
+        article.setCategory(request.categoryId() != null
+                ? categoryService.findOrThrow(request.categoryId()) : null);
+        article.setBrand(request.brandId() != null
+                ? brandService.findOrThrow(request.brandId()) : null);
     }
 }
+

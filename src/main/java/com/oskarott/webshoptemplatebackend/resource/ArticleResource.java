@@ -39,10 +39,10 @@ public class ArticleResource {
         return ResponseEntity.ok(articleService.getById(id));
     }
 
-    @Operation(summary = "Get articles by category")
-    @GetMapping("/category/{category}")
-    public ResponseEntity<List<ArticleResponse>> getByCategory(@PathVariable String category) {
-        return ResponseEntity.ok(articleService.getByCategory(category));
+    @Operation(summary = "Get articles by category ID")
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<ArticleResponse>> getByCategory(@PathVariable Long categoryId) {
+        return ResponseEntity.ok(articleService.getByCategory(categoryId));
     }
 
     @Operation(summary = "Create a new article (ADMIN only)", security = @SecurityRequirement(name = "bearerAuth"), responses = {

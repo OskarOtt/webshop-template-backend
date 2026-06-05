@@ -2,7 +2,7 @@
 # application-local.properties is gitignored — never commit it.
 
 # JWT
-jwt.secret=jwtSecret_REPLACE_ME
+JWT_SECRET=jwtSecret_REPLACE_ME
 
 # Stripe (test keys from https://dashboard.stripe.com/test/apikeys)
 stripe.api-key=sk_test_REPLACE_ME

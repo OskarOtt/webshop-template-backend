@@ -11,3 +11,13 @@ databaseChangeLog:
       file: db/changelog/changes/005-add-payment-status-to-orders.yaml
   - include:
       file: db/changelog/changes/006-restructure-users-table.yaml
+  - include:
+      file: db/changelog/changes/007-create-categories-table.yaml
+  - include:
+      file: db/changelog/changes/008-create-brands-table.yaml
+  - include:
+      file: db/changelog/changes/009-extend-articles-table.yaml
+  - include:
+      file: db/changelog/changes/010-create-article-tags-table.yaml
+  - include:
+      file: db/changelog/changes/011-article-images.yaml
