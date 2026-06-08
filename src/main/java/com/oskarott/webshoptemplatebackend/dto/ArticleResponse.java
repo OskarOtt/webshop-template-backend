@@ -1,6 +1,7 @@
 package com.oskarott.webshoptemplatebackend.dto;
 
 import com.oskarott.webshoptemplatebackend.model.Article;
+import com.oskarott.webshoptemplatebackend.model.ArticleStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public record ArticleResponse(
         BigDecimal weight,
         String color,
         List<String> tags,
+        ArticleStatus status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
@@ -42,6 +44,7 @@ public record ArticleResponse(
                 article.getWeight(),
                 article.getColor(),
                 article.getTags(),
+                article.getStatus(),
                 article.getCreatedAt(),
                 article.getUpdatedAt()
         );

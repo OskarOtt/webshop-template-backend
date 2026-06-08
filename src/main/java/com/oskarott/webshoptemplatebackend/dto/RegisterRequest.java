@@ -1,4 +1,13 @@
 package com.oskarott.webshoptemplatebackend.dto;
 
-public record RegisterRequest(String email, String firstName, String lastName, String password) {
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record RegisterRequest(
+        @NotBlank @Email String email,
+        @NotBlank String firstName,
+        @NotBlank String lastName,
+        @NotBlank @Size(min = 8) String password
+) {
 }

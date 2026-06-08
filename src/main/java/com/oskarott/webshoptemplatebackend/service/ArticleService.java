@@ -3,6 +3,7 @@ package com.oskarott.webshoptemplatebackend.service;
 import com.oskarott.webshoptemplatebackend.dto.ArticleRequest;
 import com.oskarott.webshoptemplatebackend.dto.ArticleResponse;
 import com.oskarott.webshoptemplatebackend.model.Article;
+import com.oskarott.webshoptemplatebackend.model.ArticleStatus;
 import com.oskarott.webshoptemplatebackend.repository.ArticleRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +24,9 @@ public class ArticleService {
         this.brandService = brandService;
     }
 
-    public List<ArticleResponse> getAll() {
-        return articleRepository.findAll().stream()
+    public List<ArticleResponse> getAll(ArticleStatus status) {
+        ArticleStatus filter = status != null ? status : ArticleStatus.ACTIVE;
+        return articleRepository.findByStatus(filter).stream()
                 .map(ArticleResponse::from)
                 .toList();
     }
@@ -33,8 +35,9 @@ public class ArticleService {
         return ArticleResponse.from(findOrThrow(id));
     }
 
-    public List<ArticleResponse> getByCategory(Long categoryId) {
-        return articleRepository.findByCategoryId(categoryId).stream()
+    public List<ArticleResponse> getByCategory(Long categoryId, ArticleStatus status) {
+        ArticleStatus filter = status != null ? status : ArticleStatus.ACTIVE;
+        return articleRepository.findByCategoryIdAndStatus(categoryId, filter).stream()
                 .map(ArticleResponse::from)
                 .toList();
     }
@@ -51,12 +54,23 @@ public class ArticleService {
         return ArticleResponse.from(articleRepository.save(article));
     }
 
+    /** Soft-deletes the article by setting its status to DELETED. */
     public void delete(Long id) {
-        findOrThrow(id);
-        articleRepository.deleteById(id);
+        Article article = findOrThrow(id);
+        article.setStatus(ArticleStatus.DELETED);
+        articleRepository.save(article);
     }
 
-    private Article findOrThrow(Long id) {
+    public ArticleResponse changeStatus(Long id, ArticleStatus newStatus) {
+        if (newStatus == ArticleStatus.DELETED) {
+            throw new IllegalArgumentException("Use the delete endpoint to soft-delete an article");
+        }
+        Article article = findOrThrow(id);
+        article.setStatus(newStatus);
+        return ArticleResponse.from(articleRepository.save(article));
+    }
+
+    public Article findOrThrow(Long id) {
         return articleRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Article not found: " + id));
     }
@@ -72,6 +86,10 @@ public class ArticleService {
         article.setWeight(request.weight());
         article.setColor(request.color());
         article.setTags(request.tags() != null ? request.tags() : List.of());
+
+        if (request.status() != null) {
+            article.setStatus(request.status());
+        }
 
         article.setCategory(request.categoryId() != null
                 ? categoryService.findOrThrow(request.categoryId()) : null);

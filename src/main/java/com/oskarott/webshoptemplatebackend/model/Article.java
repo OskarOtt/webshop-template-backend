@@ -56,6 +56,10 @@ public class Article {
     @Column(name = "tag")
     private List<String> tags = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ArticleStatus status = ArticleStatus.ACTIVE;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -87,6 +91,7 @@ public class Article {
     public List<String> getTags() { return tags; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public ArticleStatus getStatus() { return status; }
 
     public void setName(String name) { this.name = name; }
     public void setDescription(String description) { this.description = description; }
@@ -100,5 +105,6 @@ public class Article {
     public void setWeight(BigDecimal weight) { this.weight = weight; }
     public void setColor(String color) { this.color = color; }
     public void setTags(List<String> tags) { this.tags = tags; }
+    public void setStatus(ArticleStatus status) { this.status = status; }
 }
 

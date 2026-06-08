@@ -4,6 +4,8 @@ import com.oskarott.webshoptemplatebackend.dto.LoginRequest;
 import com.oskarott.webshoptemplatebackend.dto.RegisterRequest;
 import com.oskarott.webshoptemplatebackend.dto.TokenResponse;
 import com.oskarott.webshoptemplatebackend.dto.UserDto;
+import com.oskarott.webshoptemplatebackend.exception.ConflictException;
+import com.oskarott.webshoptemplatebackend.exception.NotFoundException;
 import com.oskarott.webshoptemplatebackend.model.Role;
 import com.oskarott.webshoptemplatebackend.model.UserEntity;
 import com.oskarott.webshoptemplatebackend.repository.UserRepository;
@@ -19,20 +21,23 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        JwtService jwtService,
-                       AuthenticationManager authenticationManager) {
+                       AuthenticationManager authenticationManager,
+                       RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public TokenResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new IllegalArgumentException("Email already registered");
+            throw new ConflictException("Email already registered");
         }
 
         UserEntity user = new UserEntity();
@@ -44,13 +49,14 @@ public class AuthService {
 
         userRepository.save(user);
 
-        String token = jwtService.generateToken(user);
-        return TokenResponse.bearer(token, jwtService.getExpirationMs());
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = refreshTokenService.createRefreshToken(user);
+        return TokenResponse.bearer(accessToken, refreshToken, jwtService.getExpirationMs());
     }
 
     public UserDto me(String email) {
         UserEntity user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
         return new UserDto(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhone(), user.getRole().name());
     }
 
@@ -60,9 +66,20 @@ public class AuthService {
         );
 
         UserEntity user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
-        String token = jwtService.generateToken(user);
-        return TokenResponse.bearer(token, jwtService.getExpirationMs());
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = refreshTokenService.createRefreshToken(user);
+        return TokenResponse.bearer(accessToken, refreshToken, jwtService.getExpirationMs());
+    }
+
+    public TokenResponse refresh(String rawRefreshToken) {
+        RefreshTokenService.RotateResult result = refreshTokenService.rotate(rawRefreshToken);
+        String newAccessToken = jwtService.generateToken(result.user());
+        return TokenResponse.bearer(newAccessToken, result.newRawToken(), jwtService.getExpirationMs());
+    }
+
+    public void logout(String rawRefreshToken) {
+        refreshTokenService.revoke(rawRefreshToken);
     }
 }

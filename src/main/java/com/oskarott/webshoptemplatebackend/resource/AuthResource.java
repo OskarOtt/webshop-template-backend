@@ -1,6 +1,7 @@
 package com.oskarott.webshoptemplatebackend.resource;
 
 import com.oskarott.webshoptemplatebackend.dto.LoginRequest;
+import com.oskarott.webshoptemplatebackend.dto.RefreshTokenRequest;
 import com.oskarott.webshoptemplatebackend.dto.RegisterRequest;
 import com.oskarott.webshoptemplatebackend.dto.TokenResponse;
 import com.oskarott.webshoptemplatebackend.dto.UserDto;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,22 +48,41 @@ public class AuthResource {
     @Operation(summary = "Register a new user", responses = {
             @ApiResponse(responseCode = "201", description = "User registered successfully",
                     content = @Content(schema = @Schema(implementation = TokenResponse.class))),
-            @ApiResponse(responseCode = "409", description = "Username or email already taken",
-                    content = @Content)
+            @ApiResponse(responseCode = "409", description = "Email already taken", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content)
     })
     @PostMapping("/register")
-    public ResponseEntity<TokenResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<TokenResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
     }
 
     @Operation(summary = "Log in with existing credentials", responses = {
             @ApiResponse(responseCode = "200", description = "Login successful",
                     content = @Content(schema = @Schema(implementation = TokenResponse.class))),
-            @ApiResponse(responseCode = "401", description = "Invalid credentials",
-                    content = @Content)
+            @ApiResponse(responseCode = "401", description = "Invalid credentials", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content)
     })
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @Operation(summary = "Refresh access token using a valid refresh token", responses = {
+            @ApiResponse(responseCode = "200", description = "New token pair issued",
+                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Refresh token invalid, expired, or revoked", content = @Content)
+    })
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
+        return ResponseEntity.ok(authService.refresh(request.refreshToken()));
+    }
+
+    @Operation(summary = "Log out by revoking the refresh token", responses = {
+            @ApiResponse(responseCode = "204", description = "Logged out successfully", content = @Content)
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@Valid @RequestBody RefreshTokenRequest request) {
+        authService.logout(request.refreshToken());
+        return ResponseEntity.noContent().build();
     }
 }
