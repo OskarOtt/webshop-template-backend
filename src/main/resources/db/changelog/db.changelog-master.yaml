@@ -27,3 +27,7 @@ databaseChangeLog:
       file: db/changelog/changes/013-create-cart-tables.yaml
   - include:
       file: db/changelog/changes/014-create-refresh-tokens-table.yaml
+  - include:
+      file: db/changelog/changes/015-create-password-reset-tokens-table.yaml
+  - include:
+      file: db/changelog/changes/016-refactor-order-address-and-fields.yaml

@@ -17,8 +17,14 @@ public record OrderResponse(
         PaymentInfoResponse payment,
         LocalDateTime orderDate,
         LocalDateTime updatedAt,
-        String shippingAddress,
+        AddressDto shippingAddress,
+        AddressDto billingAddress,
         BigDecimal totalPrice,
+        BigDecimal shippingCost,
+        String shippingMethod,
+        String notes,
+        String trackingNumber,
+        String currency,
         List<OrderItemResponse> items
 ) {
     public record PaymentInfoResponse(
@@ -50,8 +56,14 @@ public record OrderResponse(
                 PaymentInfoResponse.from(order.getPayment()),
                 order.getOrderDate(),
                 order.getUpdatedAt(),
-                order.getShippingAddress(),
+                AddressDto.from(order.getShippingAddress()),
+                AddressDto.from(order.getBillingAddress()),
                 order.getTotalPrice(),
+                order.getShippingCost(),
+                order.getShippingMethod(),
+                order.getNotes(),
+                order.getTrackingNumber(),
+                order.getCurrency(),
                 itemResponses
         );
     }

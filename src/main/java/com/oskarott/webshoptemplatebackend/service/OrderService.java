@@ -36,7 +36,11 @@ public class OrderService {
 
         Order order = new Order();
         order.setUser(user);
-        order.setShippingAddress(request.shippingAddress());
+        order.setShippingAddress(request.shippingAddress() != null ? request.shippingAddress().toEntity() : null);
+        order.setBillingAddress(request.billingAddress() != null ? request.billingAddress().toEntity() : null);
+        order.setShippingMethod(request.shippingMethod());
+        order.setNotes(request.notes());
+        order.setCurrency(request.currency());
 
         List<OrderItem> items = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;

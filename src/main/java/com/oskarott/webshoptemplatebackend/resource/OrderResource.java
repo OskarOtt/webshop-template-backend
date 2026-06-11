@@ -6,6 +6,7 @@ import com.oskarott.webshoptemplatebackend.model.OrderStatus;
 import com.oskarott.webshoptemplatebackend.model.UserEntity;
 import com.oskarott.webshoptemplatebackend.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -44,7 +45,7 @@ public class OrderResource {
 
     @Operation(summary = "List orders (own orders for users, all for ADMIN)", responses = {
             @ApiResponse(responseCode = "200", description = "Orders retrieved",
-                    content = @Content(schema = @Schema(implementation = OrderResponse.class)))
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = OrderResponse.class))))
     })
     @GetMapping
     public ResponseEntity<List<OrderResponse>> listOrders(@AuthenticationPrincipal UserEntity user) {

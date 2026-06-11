@@ -1,0 +1,88 @@
+databaseChangeLog:
+  - changeSet:
+      id: 016
+      author: oskarott
+      changes:
+        - dropColumn:
+            tableName: orders
+            columnName: shipping_address
+
+        # Shipping address columns
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: shipping_first_name
+                  type: VARCHAR(100)
+              - column:
+                  name: shipping_last_name
+                  type: VARCHAR(100)
+              - column:
+                  name: shipping_company
+                  type: VARCHAR(150)
+              - column:
+                  name: shipping_street
+                  type: VARCHAR(255)
+              - column:
+                  name: shipping_address_line2
+                  type: VARCHAR(255)
+              - column:
+                  name: shipping_area
+                  type: VARCHAR(150)
+              - column:
+                  name: shipping_postal_code
+                  type: VARCHAR(20)
+              - column:
+                  name: shipping_country
+                  type: VARCHAR(100)
+              - column:
+                  name: shipping_phone
+                  type: VARCHAR(30)
+
+        # Billing address columns (nullable — null means same as shipping)
+              - column:
+                  name: billing_first_name
+                  type: VARCHAR(100)
+              - column:
+                  name: billing_last_name
+                  type: VARCHAR(100)
+              - column:
+                  name: billing_company
+                  type: VARCHAR(150)
+              - column:
+                  name: billing_street
+                  type: VARCHAR(255)
+              - column:
+                  name: billing_address_line2
+                  type: VARCHAR(255)
+              - column:
+                  name: billing_area
+                  type: VARCHAR(150)
+              - column:
+                  name: billing_postal_code
+                  type: VARCHAR(20)
+              - column:
+                  name: billing_country
+                  type: VARCHAR(100)
+              - column:
+                  name: billing_phone
+                  type: VARCHAR(30)
+
+        # Extra order fields
+              - column:
+                  name: shipping_cost
+                  type: DECIMAL(19, 2)
+                  defaultValueNumeric: 0.00
+              - column:
+                  name: shipping_method
+                  type: VARCHAR(100)
+              - column:
+                  name: notes
+                  type: VARCHAR(1000)
+              - column:
+                  name: tracking_number
+                  type: VARCHAR(255)
+              - column:
+                  name: currency
+                  type: VARCHAR(10)
+                  defaultValue: NOK

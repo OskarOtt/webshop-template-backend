@@ -1,5 +1,8 @@
 package com.oskarott.webshoptemplatebackend.config;
 
+import com.oskarott.webshoptemplatebackend.dto.AddressDto;
+import com.oskarott.webshoptemplatebackend.dto.OrderItemRequest;
+import com.oskarott.webshoptemplatebackend.dto.OrderRequest;
 import com.oskarott.webshoptemplatebackend.model.Article;
 import com.oskarott.webshoptemplatebackend.model.Brand;
 import com.oskarott.webshoptemplatebackend.model.Category;
@@ -8,7 +11,9 @@ import com.oskarott.webshoptemplatebackend.model.UserEntity;
 import com.oskarott.webshoptemplatebackend.repository.ArticleRepository;
 import com.oskarott.webshoptemplatebackend.repository.BrandRepository;
 import com.oskarott.webshoptemplatebackend.repository.CategoryRepository;
+import com.oskarott.webshoptemplatebackend.repository.OrderRepository;
 import com.oskarott.webshoptemplatebackend.repository.UserRepository;
+import com.oskarott.webshoptemplatebackend.service.OrderService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,17 +31,23 @@ public class DevDataInitializer implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
     private final BrandRepository brandRepository;
     private final ArticleRepository articleRepository;
+    private final OrderService orderService;
+    private final OrderRepository orderRepository;
 
     public DevDataInitializer(UserRepository userRepository,
                                PasswordEncoder passwordEncoder,
                                CategoryRepository categoryRepository,
                                BrandRepository brandRepository,
-                               ArticleRepository articleRepository) {
+                               ArticleRepository articleRepository,
+                               OrderService orderService,
+                               OrderRepository orderRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.categoryRepository = categoryRepository;
         this.brandRepository = brandRepository;
         this.articleRepository = articleRepository;
+        this.orderService = orderService;
+        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -45,6 +56,7 @@ public class DevDataInitializer implements CommandLineRunner {
         seedCategories();
         seedBrands();
         seedArticles();
+        seedOrders();
     }
 
     private void seedAdmin() {
@@ -184,6 +196,63 @@ public class DevDataInitializer implements CommandLineRunner {
                         "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=400"
                 ),
                 "NK-PROTEE-GRY-L", "L", new BigDecimal("0.180"), "Grey", List.of("t-shirt", "compression", "pro"));
+    }
+
+    private void seedOrders() {
+        if (orderRepository.count() > 0) {
+            return;
+        }
+
+        UserEntity admin = userRepository.findByEmail("admin@local.dev").orElse(null);
+        if (admin == null) {
+            return;
+        }
+
+        List<Article> articles = articleRepository.findAll();
+
+        Long iphone15Id = articles.stream()
+                .filter(a -> a.getName().equals("Apple iPhone 15"))
+                .findFirst().map(Article::getId).orElse(null);
+
+        Long nikeTshirtId = articles.stream()
+                .filter(a -> a.getName().equals("Nike Dri-FIT T-Shirt"))
+                .findFirst().map(Article::getId).orElse(null);
+
+        Long nikeAirMaxId = articles.stream()
+                .filter(a -> a.getName().equals("Nike Air Max 270"))
+                .findFirst().map(Article::getId).orElse(null);
+
+        Long samsungWatchId = articles.stream()
+                .filter(a -> a.getName().equals("Samsung Galaxy Watch 6"))
+                .findFirst().map(Article::getId).orElse(null);
+
+        if (iphone15Id != null) {
+            AddressDto osloAddress = new AddressDto(
+                    "Admin", "Local", null,
+                    "123 Main Street", null,
+                    "Oslo", "0150", "Norway", "+47 900 00 001"
+            );
+            orderService.placeOrder(admin.getId(), new OrderRequest(
+                    List.of(new OrderItemRequest(iphone15Id, 1)),
+                    osloAddress, null, "STANDARD", null, "NOK"
+            ));
+        }
+
+        if (nikeTshirtId != null && nikeAirMaxId != null && samsungWatchId != null) {
+            AddressDto bergenAddress = new AddressDto(
+                    "Admin", "Local", "Acme AS",
+                    "456 Tech Avenue", null,
+                    "Bergen", "5003", "Norway", "+47 900 00 002"
+            );
+            orderService.placeOrder(admin.getId(), new OrderRequest(
+                    List.of(
+                            new OrderItemRequest(nikeTshirtId, 2),
+                            new OrderItemRequest(nikeAirMaxId, 1),
+                            new OrderItemRequest(samsungWatchId, 1)
+                    ),
+                    bergenAddress, null, "EXPRESS", "Please leave at door.", "NOK"
+            ));
+        }
     }
 
     private void saveArticle(String name, String description, BigDecimal price, int stock,

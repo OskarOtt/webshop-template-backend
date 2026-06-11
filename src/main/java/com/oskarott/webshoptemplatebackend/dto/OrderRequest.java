@@ -4,5 +4,9 @@ import java.util.List;
 
 public record OrderRequest(
         List<OrderItemRequest> items,
-        String shippingAddress
+        AddressDto shippingAddress,
+        AddressDto billingAddress,
+        String shippingMethod,
+        String notes,
+        String currency
 ) {}

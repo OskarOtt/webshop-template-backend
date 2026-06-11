@@ -25,6 +25,7 @@ public class PaymentService {
 
     private final OrderRepository orderRepository;
     private final ArticleRepository articleRepository;
+    private final EmailService emailService;
 
     @Value("${stripe.api-key}")
     private String apiKey;
@@ -38,9 +39,12 @@ public class PaymentService {
     @Value("${stripe.cancel-url}")
     private String cancelUrl;
 
-    public PaymentService(OrderRepository orderRepository, ArticleRepository articleRepository) {
+    public PaymentService(OrderRepository orderRepository,
+                          ArticleRepository articleRepository,
+                          EmailService emailService) {
         this.orderRepository = orderRepository;
         this.articleRepository = articleRepository;
+        this.emailService = emailService;
     }
 
     public CheckoutResponse createCheckoutSession(Long orderId, Long userId) {
@@ -108,6 +112,7 @@ public class PaymentService {
                 order.getPayment().setStripePaymentIntentId(session.getPaymentIntent());
                 order.getPayment().setPaidAt(LocalDateTime.now());
                 orderRepository.save(order);
+                emailService.sendOrderConfirmation(order);
             }
             case "checkout.session.expired" -> {
                 Session session = (Session) event.getDataObjectDeserializer()

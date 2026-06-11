@@ -1,11 +1,14 @@
 package com.oskarott.webshoptemplatebackend.resource;
 
+import com.oskarott.webshoptemplatebackend.dto.ForgotPasswordRequest;
 import com.oskarott.webshoptemplatebackend.dto.LoginRequest;
 import com.oskarott.webshoptemplatebackend.dto.RefreshTokenRequest;
 import com.oskarott.webshoptemplatebackend.dto.RegisterRequest;
+import com.oskarott.webshoptemplatebackend.dto.ResetPasswordRequest;
 import com.oskarott.webshoptemplatebackend.dto.TokenResponse;
 import com.oskarott.webshoptemplatebackend.dto.UserDto;
 import com.oskarott.webshoptemplatebackend.service.AuthService;
+import com.oskarott.webshoptemplatebackend.service.PasswordResetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,9 +32,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthResource {
 
     private final AuthService authService;
+    private final PasswordResetService passwordResetService;
 
-    public AuthResource(AuthService authService) {
+    public AuthResource(AuthService authService, PasswordResetService passwordResetService) {
         this.authService = authService;
+        this.passwordResetService = passwordResetService;
     }
 
     @Operation(summary = "Get current authenticated user", responses = {
@@ -84,5 +89,25 @@ public class AuthResource {
     public ResponseEntity<Void> logout(@Valid @RequestBody RefreshTokenRequest request) {
         authService.logout(request.refreshToken());
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Request a password reset email", responses = {
+            @ApiResponse(responseCode = "200", description = "If the email exists, a reset link has been sent", content = @Content)
+    })
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        passwordResetService.initiateReset(request.email());
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Reset password using a token from the reset email", responses = {
+            @ApiResponse(responseCode = "200", description = "Password reset successfully", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Token invalid, expired, or already used", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content)
+    })
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        passwordResetService.confirmReset(request.token(), request.newPassword());
+        return ResponseEntity.ok().build();
     }
 }

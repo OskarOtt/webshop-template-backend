@@ -7,3 +7,8 @@ JWT_SECRET=jwtSecret_REPLACE_ME
 # Stripe (test keys from https://dashboard.stripe.com/test/apikeys)
 stripe.api-key=sk_test_REPLACE_ME
 stripe.webhook-secret=whsec_REPLACE_ME
+
+# Brevo SMTP (get keys from https://app.brevo.com/settings/keys/smtp)
+BREVO_SMTP_USER=your_brevo_login_email@example.com
+BREVO_SMTP_KEY=your_brevo_smtp_key_here
+MAIL_FROM=your_brevo_login_email@example.com
