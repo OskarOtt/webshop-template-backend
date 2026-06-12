@@ -49,6 +49,13 @@ public class OrderService {
             Article article = articleRepository.findById(itemReq.articleId())
                     .orElseThrow(() -> new IllegalArgumentException("Article not found: " + itemReq.articleId()));
 
+            if (article.getStatus() != ArticleStatus.ACTIVE) {
+                throw new IllegalStateException(
+                        "Article '%s' is not available for purchase (status: %s)"
+                                .formatted(article.getName(), article.getStatus())
+                );
+            }
+
             if (article.getStockQuantity() < itemReq.quantity()) {
                 throw new IllegalStateException(
                         "Insufficient stock for article '%s'. Available: %d, requested: %d"

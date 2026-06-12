@@ -67,7 +67,7 @@ public class DevDataInitializer implements CommandLineRunner {
         admin.setEmail("admin@local.dev");
         admin.setFirstName("Admin");
         admin.setLastName("Local");
-        admin.setPassword(passwordEncoder.encode("admin123"));
+        admin.setPassword(passwordEncoder.encode("test123"));
         admin.setRole(Role.ADMIN);
         userRepository.save(admin);
     }

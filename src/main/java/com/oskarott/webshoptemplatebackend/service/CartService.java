@@ -6,6 +6,7 @@ import com.oskarott.webshoptemplatebackend.dto.UpdateCartItemRequest;
 import com.oskarott.webshoptemplatebackend.model.*;
 import com.oskarott.webshoptemplatebackend.repository.CartItemRepository;
 import com.oskarott.webshoptemplatebackend.repository.CartRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +17,16 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ArticleService articleService;
+    private final CartCreator cartCreator;
 
     public CartService(CartRepository cartRepository,
                        CartItemRepository cartItemRepository,
-                       ArticleService articleService) {
+                       ArticleService articleService,
+                       CartCreator cartCreator) {
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
         this.articleService = articleService;
+        this.cartCreator = cartCreator;
     }
 
     public CartResponse getCart(UserEntity user) {
@@ -94,9 +98,12 @@ public class CartService {
 
     private Cart getOrCreateCart(UserEntity user) {
         return cartRepository.findByUserId(user.getId()).orElseGet(() -> {
-            Cart cart = new Cart();
-            cart.setUser(user);
-            return cartRepository.save(cart);
+            try {
+                return cartCreator.createForUser(user);
+            } catch (DataIntegrityViolationException e) {
+                return cartRepository.findByUserId(user.getId())
+                        .orElseThrow(() -> new IllegalStateException("Cart not found after concurrent creation", e));
+            }
         });
     }
 }

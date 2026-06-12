@@ -17,46 +17,6 @@ Spring Boot REST API template for a webshop. JWT auth, product catalogue, order 
 
 ## Features
 
-### Auth (`/auth`)
-| Method | Endpoint | Access | Description |
-|---|---|---|---|
-| POST | `/auth/register` | Public | Register new user, returns JWT |
-| POST | `/auth/login` | Public | Login, returns JWT |
-| GET | `/auth/me` | Authenticated | Get current user info |
-
-### Articles (`/articles`)
-| Method | Endpoint | Access | Description |
-|---|---|---|---|
-| GET | `/articles` | Public | List all articles |
-| GET | `/articles/{id}` | Public | Get article by ID |
-| GET | `/articles/category/{category}` | Public | Filter by category |
-| POST | `/articles` | ADMIN | Create article |
-| PUT | `/articles/{id}` | ADMIN | Update article |
-| DELETE | `/articles/{id}` | ADMIN | Delete article |
-
-Article fields: `name`, `description`, `price`, `stockQuantity`, `category`, `imageUrl`.
-
-### Orders (`/orders`)
-All endpoints require authentication.
-
-| Method | Endpoint | Access | Description |
-|---|---|---|---|
-| POST | `/orders` | User | Place order |
-| GET | `/orders` | User/ADMIN | Own orders (users) or all orders (ADMIN) |
-| GET | `/orders/{id}` | User/ADMIN | Get order by ID |
-| PUT | `/orders/{id}/status` | ADMIN | Update order status |
-
-Order statuses: `PENDING` → `CONFIRMED` → `SHIPPED` → `DELIVERED` / `CANCELLED`.
-
-### Payments (`/payments`)
-| Method | Endpoint | Access | Description |
-|---|---|---|---|
-| POST | `/payments/checkout/{orderId}` | Authenticated | Create Stripe Checkout session |
-| POST | `/payments/webhook` | Public (Stripe) | Receive Stripe webhook events |
-
-Payment flow: place order → create Stripe checkout session → redirect user to Stripe → webhook confirms payment → order status auto-updates.
-
----
 
 ## Getting Started
 
@@ -73,10 +33,8 @@ Payment flow: place order → create Stripe checkout session → redirect user t
    ```
 
 2. Fill in `application-local.properties`:
-   ```properties
-   jwt.secret=your_secret_here
-   stripe.api-key=sk_test_...
-   stripe.webhook-secret=whsec_...
+   ```
+   Copy application-local.properties.template to application-local.properties and fill in the required values (JWT secret, Stripe keys, etc).
    ```
 
 3. Run:
