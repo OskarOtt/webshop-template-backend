@@ -7,6 +7,7 @@ import com.oskarott.webshoptemplatebackend.model.PaymentStatus;
 import com.oskarott.webshoptemplatebackend.repository.ArticleRepository;
 import com.oskarott.webshoptemplatebackend.repository.OrderRepository;
 import com.stripe.Stripe;
+import com.stripe.exception.EventDataObjectDeserializationException;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.model.checkout.Session;
@@ -93,7 +94,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public void handleWebhook(String payload, String sigHeader) {
+    public void handleWebhook(String payload, String sigHeader) throws EventDataObjectDeserializationException {
         Event event;
         try {
             event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
@@ -104,8 +105,7 @@ public class PaymentService {
         switch (event.getType()) {
             case "checkout.session.completed" -> {
                 Session session = (Session) event.getDataObjectDeserializer()
-                        .getObject()
-                        .orElseThrow(() -> new RuntimeException("Missing session data in event"));
+                        .deserializeUnsafe();
                 Order order = orderRepository.findByPaymentStripeSessionId(session.getId())
                         .orElseThrow(() -> new RuntimeException("No order found for session: " + session.getId()));
                 order.setPaymentStatus(PaymentStatus.PAID);
@@ -116,8 +116,7 @@ public class PaymentService {
             }
             case "checkout.session.expired" -> {
                 Session session = (Session) event.getDataObjectDeserializer()
-                        .getObject()
-                        .orElseThrow(() -> new RuntimeException("Missing session data in event"));
+                        .deserializeUnsafe();
                 orderRepository.findByPaymentStripeSessionId(session.getId()).ifPresent(order -> {
                     order.setPaymentStatus(PaymentStatus.FAILED);
                     orderRepository.save(order);

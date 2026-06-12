@@ -3,6 +3,7 @@ package com.oskarott.webshoptemplatebackend.resource;
 import com.oskarott.webshoptemplatebackend.dto.CheckoutResponse;
 import com.oskarott.webshoptemplatebackend.model.UserEntity;
 import com.oskarott.webshoptemplatebackend.service.PaymentService;
+import com.stripe.exception.EventDataObjectDeserializationException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,7 +46,7 @@ public class PaymentResource {
             @ApiResponse(responseCode = "400", description = "Invalid signature or payload", content = @Content)
     })
     @PostMapping("/webhook")
-    public ResponseEntity<Void> webhook(HttpServletRequest request) throws IOException {
+    public ResponseEntity<Void> webhook(HttpServletRequest request) throws IOException, EventDataObjectDeserializationException {
         String payload = new String(request.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         String sigHeader = request.getHeader("Stripe-Signature");
         paymentService.handleWebhook(payload, sigHeader);
