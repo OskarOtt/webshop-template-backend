@@ -33,13 +33,14 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserRepository userRepository;
+    private final String frontendUrl;
 
-    @Value("${app.frontend-url:http://localhost:5173}")
-    private String frontendUrl;
-
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserRepository userRepository) {
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter,
+                          UserRepository userRepository,
+                          @Value("${app.frontend-url}") String frontendUrl) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.userRepository = userRepository;
+        this.frontendUrl = frontendUrl;
     }
 
     @Bean
