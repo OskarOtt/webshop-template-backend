@@ -12,3 +12,9 @@ stripe.webhook-secret=whsec_REPLACE_ME
 BREVO_SMTP_USER=your_brevo_login_email@example.com
 BREVO_SMTP_KEY=your_brevo_smtp_key_here
 MAIL_FROM=your_brevo_login_email@example.com
+
+# Seed admin user
+SEED_ADMIN_EMAIL=example@mail.com
+SEED_ADMIN_PASSWORD=testpassword
+
+FRONTEND_URL=http://localhost:5173
