@@ -14,8 +14,8 @@ import com.oskarott.webshoptemplatebackend.repository.CategoryRepository;
 import com.oskarott.webshoptemplatebackend.repository.OrderRepository;
 import com.oskarott.webshoptemplatebackend.repository.UserRepository;
 import com.oskarott.webshoptemplatebackend.service.OrderService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +23,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Component
-@Profile("local")
-public class DevDataInitializer implements CommandLineRunner {
+public class SeedDataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -34,7 +33,13 @@ public class DevDataInitializer implements CommandLineRunner {
     private final OrderService orderService;
     private final OrderRepository orderRepository;
 
-    public DevDataInitializer(UserRepository userRepository,
+    @Value("${seed.admin.email:admin@local.dev}")
+    private String adminEmail;
+
+    @Value("${seed.admin.password:test123}")
+    private String adminPassword;
+
+    public SeedDataInitializer(UserRepository userRepository,
                                PasswordEncoder passwordEncoder,
                                CategoryRepository categoryRepository,
                                BrandRepository brandRepository,
@@ -60,14 +65,14 @@ public class DevDataInitializer implements CommandLineRunner {
     }
 
     private void seedAdmin() {
-        if (userRepository.existsByEmail("admin@local.dev")) {
+        if (userRepository.existsByEmail(adminEmail)) {
             return;
         }
         UserEntity admin = new UserEntity();
-        admin.setEmail("admin@local.dev");
+        admin.setEmail(adminEmail);
         admin.setFirstName("Admin");
         admin.setLastName("Local");
-        admin.setPassword(passwordEncoder.encode("test123"));
+        admin.setPassword(passwordEncoder.encode(adminPassword));
         admin.setRole(Role.ADMIN);
         userRepository.save(admin);
     }
@@ -93,18 +98,18 @@ public class DevDataInitializer implements CommandLineRunner {
     }
 
     private void seedBrands() {
-        if (brandRepository.existsByName("Nike")) {
+        if (brandRepository.existsByName("Nyke")) {
             return;
         }
-        saveBrand("Nike",
+        saveBrand("Nyke",
                 "https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg",
-                "Nike is a global leader in athletic footwear, apparel and equipment.");
-        saveBrand("Apple",
+                "Nyke is a fictional leader in athletic footwear, apparel and equipment.");
+        saveBrand("Aple",
                 "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
-                "Apple designs and manufactures consumer electronics, software and services.");
-        saveBrand("Samsung",
+                "Aple designs and manufactures consumer electronics, software and services.");
+        saveBrand("Sumsung",
                 "https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg",
-                "Samsung is a multinational conglomerate known for electronics and semiconductors.");
+                "Sumsung is a fictional conglomerate known for electronics and semiconductors.");
     }
 
     private void saveBrand(String name, String logoUrl, String description) {
@@ -124,12 +129,12 @@ public class DevDataInitializer implements CommandLineRunner {
         Category phones = categoryRepository.findByName("Phones").orElse(null);
         Category running = categoryRepository.findByName("Running").orElse(null);
 
-        Brand nike = brandRepository.findByName("Nike").orElse(null);
-        Brand apple = brandRepository.findByName("Apple").orElse(null);
-        Brand samsung = brandRepository.findByName("Samsung").orElse(null);
+        Brand nyke = brandRepository.findByName("Nyke").orElse(null);
+        Brand aple = brandRepository.findByName("Aple").orElse(null);
+        Brand sumsung = brandRepository.findByName("Sumsung").orElse(null);
 
-        saveArticle("Nike Dri-FIT T-Shirt", "Lightweight moisture-wicking training tee.", new BigDecimal("29.99"), 120,
-                tShirts, nike,
+        saveArticle("Nyke Dri-FIT T-Shirt", "Lightweight moisture-wicking training tee.", new BigDecimal("29.99"), 120,
+                tShirts, nyke,
                 List.of(
                         "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
                         "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400",
@@ -137,8 +142,8 @@ public class DevDataInitializer implements CommandLineRunner {
                 ),
                 "NK-TSHIRT-BLK-M", "M", new BigDecimal("0.200"), "Black", List.of("t-shirt", "training", "dri-fit"));
 
-        saveArticle("Nike Air Max 270", "Casual lifestyle sneaker with large Air unit.", new BigDecimal("149.99"), 45,
-                running, nike,
+        saveArticle("Nyke Air Max 270", "Casual lifestyle sneaker with large Air unit.", new BigDecimal("149.99"), 45,
+                running, nyke,
                 List.of(
                         "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
                         "https://images.unsplash.com/photo-1605348532760-6753d2c43329?w=400",
@@ -146,50 +151,50 @@ public class DevDataInitializer implements CommandLineRunner {
                 ),
                 "NK-AM270-WHT-42", "42", new BigDecimal("0.750"), "White", List.of("shoes", "sneaker", "air-max"));
 
-        saveArticle("Nike Running Shorts", "Lightweight shorts built for speed.", new BigDecimal("34.99"), 80,
-                running, nike,
+        saveArticle("Nyke Running Shorts", "Lightweight shorts built for speed.", new BigDecimal("34.99"), 80,
+                running, nyke,
                 List.of(
                         "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400",
                         "https://images.unsplash.com/photo-1556906781-9a412961a28c?w=400"
                 ),
                 "NK-SHORTS-BLU-L", "L", new BigDecimal("0.150"), "Blue", List.of("shorts", "running", "sport"));
 
-        saveArticle("Apple iPhone 15", "6.1-inch Super Retina XDR display, A16 Bionic chip.", new BigDecimal("999.00"), 30,
-                phones, apple,
+        saveArticle("Aple Fone 15", "6.1-inch Super Retina XDR display, X16 Bionix chip.", new BigDecimal("999.00"), 30,
+                phones, aple,
                 List.of(
                         "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400",
                         "https://images.unsplash.com/photo-1591337676887-a217a6970a8a?w=400",
                         "https://images.unsplash.com/photo-1574755393849-623942496936?w=400"
                 ),
-                "APL-IP15-BLK-128", null, new BigDecimal("0.171"), "Black", List.of("iphone", "smartphone", "apple"));
+                "APL-IP15-BLK-128", null, new BigDecimal("0.171"), "Black", List.of("fone", "smartphone", "aple"));
 
-        saveArticle("Apple iPhone 15 Pro", "Titanium design with A17 Pro chip and ProRes video.", new BigDecimal("1199.00"), 20,
-                phones, apple,
+        saveArticle("Aple Fone 15 Pro", "Titanium design with X17 Pro chip and ProRes video.", new BigDecimal("1199.00"), 20,
+                phones, aple,
                 List.of(
                         "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400",
                         "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400"
                 ),
-                "APL-IP15PRO-TIT-256", null, new BigDecimal("0.187"), "Natural Titanium", List.of("iphone", "pro", "smartphone"));
+                "APL-IP15PRO-TIT-256", null, new BigDecimal("0.187"), "Natural Titanium", List.of("fone", "pro", "smartphone"));
 
-        saveArticle("Samsung Galaxy S24", "6.2-inch Dynamic AMOLED, Snapdragon 8 Gen 3.", new BigDecimal("849.00"), 35,
-                phones, samsung,
+        saveArticle("Sumsung Galaksy S24", "6.2-inch Dynamic AMOLED, Snapdraxon 8 Gen 3.", new BigDecimal("849.00"), 35,
+                phones, sumsung,
                 List.of(
                         "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400",
                         "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=400",
                         "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400"
                 ),
-                "SAM-S24-VLT-128", null, new BigDecimal("0.167"), "Violet", List.of("samsung", "galaxy", "android"));
+                "SAM-S24-VLT-128", null, new BigDecimal("0.167"), "Violet", List.of("sumsung", "galaksy", "android"));
 
-        saveArticle("Samsung Galaxy Watch 6", "Sapphire crystal display with advanced health tracking.", new BigDecimal("299.00"), 50,
-                null, samsung,
+        saveArticle("Sumsung Galaksy Watch 6", "Sapphire crystal display with advanced health tracking.", new BigDecimal("299.00"), 50,
+                null, sumsung,
                 List.of(
                         "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
                         "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400"
                 ),
-                "SAM-GW6-SLV-44", "44mm", new BigDecimal("0.059"), "Silver", List.of("smartwatch", "samsung", "wearable"));
+                "SAM-GW6-SLV-44", "44mm", new BigDecimal("0.059"), "Silver", List.of("smartwatch", "sumsung", "wearable"));
 
-        saveArticle("Nike Pro Compression Tee", "Second-skin fit with Dri-FIT ADV technology.", new BigDecimal("44.99"), 60,
-                tShirts, nike,
+        saveArticle("Nyke Pro Compression Tee", "Second-skin fit with Dri-FIT ADV technology.", new BigDecimal("44.99"), 60,
+                tShirts, nyke,
                 List.of(
                         "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400",
                         "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400",
@@ -203,42 +208,42 @@ public class DevDataInitializer implements CommandLineRunner {
             return;
         }
 
-        UserEntity admin = userRepository.findByEmail("admin@local.dev").orElse(null);
+        UserEntity admin = userRepository.findByEmail(adminEmail).orElse(null);
         if (admin == null) {
             return;
         }
 
         List<Article> articles = articleRepository.findAll();
 
-        Long iphone15Id = articles.stream()
-                .filter(a -> a.getName().equals("Apple iPhone 15"))
+        Long apleFone15Id = articles.stream()
+                .filter(a -> a.getName().equals("Aple Fone 15"))
                 .findFirst().map(Article::getId).orElse(null);
 
-        Long nikeTshirtId = articles.stream()
-                .filter(a -> a.getName().equals("Nike Dri-FIT T-Shirt"))
+        Long nykeTshirtId = articles.stream()
+                .filter(a -> a.getName().equals("Nyke Dri-FIT T-Shirt"))
                 .findFirst().map(Article::getId).orElse(null);
 
-        Long nikeAirMaxId = articles.stream()
-                .filter(a -> a.getName().equals("Nike Air Max 270"))
+        Long nykeAirMaxId = articles.stream()
+                .filter(a -> a.getName().equals("Nyke Air Max 270"))
                 .findFirst().map(Article::getId).orElse(null);
 
-        Long samsungWatchId = articles.stream()
-                .filter(a -> a.getName().equals("Samsung Galaxy Watch 6"))
+        Long sumsungWatchId = articles.stream()
+                .filter(a -> a.getName().equals("Sumsung Galaksy Watch 6"))
                 .findFirst().map(Article::getId).orElse(null);
 
-        if (iphone15Id != null) {
+        if (apleFone15Id != null) {
             AddressDto osloAddress = new AddressDto(
                     "Admin", "Local", null,
                     "123 Main Street", null,
                     "Oslo", "0150", "Norway", "+47 900 00 001"
             );
             orderService.placeOrder(admin.getId(), new OrderRequest(
-                    List.of(new OrderItemRequest(iphone15Id, 1)),
+                    List.of(new OrderItemRequest(apleFone15Id, 1)),
                     osloAddress, null, "STANDARD", null, "NOK"
             ));
         }
 
-        if (nikeTshirtId != null && nikeAirMaxId != null && samsungWatchId != null) {
+        if (nykeTshirtId != null && nykeAirMaxId != null && sumsungWatchId != null) {
             AddressDto bergenAddress = new AddressDto(
                     "Admin", "Local", "Acme AS",
                     "456 Tech Avenue", null,
@@ -246,9 +251,9 @@ public class DevDataInitializer implements CommandLineRunner {
             );
             orderService.placeOrder(admin.getId(), new OrderRequest(
                     List.of(
-                            new OrderItemRequest(nikeTshirtId, 2),
-                            new OrderItemRequest(nikeAirMaxId, 1),
-                            new OrderItemRequest(samsungWatchId, 1)
+                            new OrderItemRequest(nykeTshirtId, 2),
+                            new OrderItemRequest(nykeAirMaxId, 1),
+                            new OrderItemRequest(sumsungWatchId, 1)
                     ),
                     bergenAddress, null, "EXPRESS", "Please leave at door.", "NOK"
             ));
@@ -274,4 +279,3 @@ public class DevDataInitializer implements CommandLineRunner {
         articleRepository.save(article);
     }
 }
-
