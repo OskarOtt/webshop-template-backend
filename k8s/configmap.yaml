@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webshop-backend-config
+  labels:
+    app: webshop-backend
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  FRONTEND_URL: "https://oskarott.github.io/webshop-template-frontend/"
+  MAIL_FROM: "oskar.ott@icloud.com"

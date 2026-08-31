@@ -11,4 +11,6 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "-Dserver.port=${PORT:-8080}", "app.jar"]
+# Exec-form ENTRYPOINT does not expand shell variables, so rely on Spring Boot's
+# built-in SERVER_PORT env var binding (defaults to 8080) instead of -D substitution.
+ENTRYPOINT ["java", "-jar", "app.jar"]
