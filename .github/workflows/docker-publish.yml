@@ -32,6 +32,15 @@ jobs:
           cache: 'maven'
 
       - name: Build and test with Maven
+        env:
+          # Dummy values so Spring context loads during tests; not real secrets.
+          JWT_SECRET: test-jwt-secret-for-ci-build-only
+          STRIPE_API_KEY: sk_test_dummy
+          STRIPE_WEBHOOK_SECRET: whsec_dummy
+          BREVO_SMTP_USER: test@example.com
+          BREVO_SMTP_KEY: dummy-smtp-key
+          SEED_ADMIN_EMAIL: admin@example.com
+          SEED_ADMIN_PASSWORD: dummy-password
         run: mvn -B package --file pom.xml
 
   docker:
