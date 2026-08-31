@@ -41,6 +41,7 @@ jobs:
           BREVO_SMTP_KEY: dummy-smtp-key
           SEED_ADMIN_EMAIL: admin@example.com
           SEED_ADMIN_PASSWORD: dummy-password
+          FRONTEND_URL: http://localhost:5173
         run: mvn -B package --file pom.xml
 
   docker:
