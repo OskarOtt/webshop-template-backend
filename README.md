@@ -19,7 +19,7 @@ Spring Boot REST API template for a webshop. JWT auth, product catalogue, order 
 
 
 ## Getting Started
-
+ 
 ### Prerequisites
 - Java 21
 - Maven
