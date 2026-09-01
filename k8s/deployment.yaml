@@ -18,7 +18,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: webshop-backend
-          # Image published by .github/workflows/docker-publish.yml on push to main
+          # Image published by .github/workflows/deploy.yml on push to main
           image: ghcr.io/oskarott/webshop-template-backend:main
           imagePullPolicy: Always
           ports:
