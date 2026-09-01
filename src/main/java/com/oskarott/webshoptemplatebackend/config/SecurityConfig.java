@@ -74,7 +74,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(frontendUrl));
+        config.setAllowedOrigins(List.of(frontendOrigin()));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
@@ -82,6 +82,13 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    // CORS requires just the origin (scheme + host [+ port]), while app.frontend-url
+    // may include a path (e.g. for Stripe redirect URLs), so strip it here.
+    private String frontendOrigin() {
+        java.net.URI uri = java.net.URI.create(frontendUrl);
+        return uri.getScheme() + "://" + uri.getAuthority();
     }
 
     @Bean
