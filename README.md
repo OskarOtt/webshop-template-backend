@@ -35,7 +35,7 @@ Spring Boot REST API template for a webshop. JWT auth, product catalogue, order 
 2. Fill in `application-local.properties`:
    ```
    Copy application-local.properties.template to application-local.properties and fill in the required values (JWT secret, Stripe keys, etc).
-   ```
+   ``` 
 
 3. Run: 
    ```bash
