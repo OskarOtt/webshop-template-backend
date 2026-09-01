@@ -9,10 +9,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - webshop.api.oskott.com
+        - webshop-api.oskott.com
       secretName: webshop-backend-tls
   rules:
-    - host: webshop.api.oskott.com
+    - host: webshop-api.oskott.com
       http:
         paths:
           - path: /
