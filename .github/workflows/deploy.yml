@@ -86,7 +86,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "k8s/*"
-          target: "/home/${{ secrets.SSH_USER }}/k8s/webshop-backend"
+          target: "/home/${{ secrets.SSH_USER }}/pipeline/webshop-backend"
 
 
       # -------------------------
@@ -100,7 +100,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 2222
           script: |
-            microk8s kubectl apply -f /home/${{ secrets.SSH_USER }}/k8s/webshop-backend/
+            microk8s kubectl apply -f /home/${{ secrets.SSH_USER }}/pipeline/webshop-backend/k8s
 
             microk8s kubectl rollout restart deployment/webshop-backend
 
