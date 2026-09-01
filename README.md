@@ -2,7 +2,7 @@
 
 Spring Boot REST API template for a webshop. JWT auth, product catalogue, order management, Stripe payments.
 
-## Stack
+## Stack 
 
 | Layer | Tech |
 |---|---|
