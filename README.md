@@ -37,7 +37,7 @@ Spring Boot REST API template for a webshop. JWT auth, product catalogue, order 
    Copy application-local.properties.template to application-local.properties and fill in the required values (JWT secret, Stripe keys, etc).
    ```
 
-3. Run:
+3. Run: 
    ```bash
    ./mvn spring-boot:run
    ```
