@@ -19,7 +19,7 @@ spec:
       containers:
         - name: webshop-backend
           # Image published by .github/workflows/deploy.yml on push to main
-          image: ghcr.io/oskarott/webshop-template-backend:main
+          image: ghcr.io/oskarott/webshop-template-backend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
