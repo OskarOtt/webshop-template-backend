@@ -75,7 +75,7 @@ H2 console (dev): `http://localhost:8080/h2-console`
 
 ## CORS
 
-Configured to allow `http://localhost:5173` (Vite default). Change in `SecurityConfig` for other origins.
+Allowed origin derived from `app.frontend-url` (env `FRONTEND_URL`), default `http://localhost:5173` (Vite default). Production origin set via `FRONTEND_URL` in `k8s/configmap.yaml`.
 
 ## Roles
 
